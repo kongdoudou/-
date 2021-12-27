@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input id="input" type="text">
+    <!-- <script src="./index.js"></script> -->
+    <script>
+        // 在 一定时间 之内，限制 一个动作 只 执行一次 
+        // onresize，scroll，mousemove ,mousehover
+        let input = document.getElementById('input');
+        function logger() {
+            console.log('logger')
+        }
+        function throttle(fn, wait) {
+            let prev = 0;
+            let timer = null;
+            return function(...args){
+                let context = this;
+                let now = Date.now();
+                let remain = wait - (now - prev);
+                if(remain <= 0) {
+                    // 第一次的时候触发
+                    if(timer) {
+                        clearTimeout(timer);
+                        timer = null;
+                    }
+                    fn.apply(context, args);
+                    prev = now;
+                } else if(!timer) {
+                    // 如果没到触发的时间，那么启一个距离prev时间为wait时间的定时器
+                    timer = setTimeout(function(){
+                        fn.apply(context, args);
+                        prev = now;
+                    }, remain)
+                }
+            }
+        }
+        // 重点在于一段时间之内仅执行一次
+        input.addEventListener('input', throttle(logger, 1000));
+    </script>
+</body>
+</html>
