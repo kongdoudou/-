@@ -12,4 +12,3 @@ console.log(arr2.flat(Infinity));
 const arr1 = [1,2,3];
 const obj = {};
 
-let [a:obj[a]] = arr1;
