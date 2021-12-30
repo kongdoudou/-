@@ -41,4 +41,13 @@ https://blog.csdn.net/qq_42880714/article/details/105792817
 算法中复杂度的算法
 https://www.cnblogs.com/ajaemp/p/13931262.html
 
+SSL的加密和解密过程
+https://blog.csdn.net/weixin_45309916/article/details/108214105
+
+HTTP1.1和HTTP2.0的区别
+
+cache-control
+
+nextTick -- 详细看下
+
 
