@@ -99,4 +99,29 @@ https://zhuanlan.zhihu.com/p/274325699
 
 nextTick -- 详细看下
 
+老虎证券面经
+1、position有哪些属性以及分别代表什么含义
+https://www.cnblogs.com/dark-duck/p/14288292.html
+
+2、前端列表
+https://www.cnblogs.com/lvxueyang/p/13707466.html
+有序列表 ol
+无序列表 ul
+自定义列表 dl dt dd
+
+3、form表单提交的方式
+http://www.anyrt.com/blog/list/submit.html
+
+4、标准盒模型和怪异盒模型
+https://www.cnblogs.com/yky-iris/p/7719895.html
+https://www.cnblogs.com/52580587zl/p/12545194.html
+
+5、什么是bfc及触发条件小结
+https://zhuanlan.zhihu.com/p/352069904
+
+6、获取input的value值
+https://jingyan.baidu.com/article/f00622287f2c03fbd3f0c8ef.html
+
+
+
 
