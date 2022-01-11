@@ -123,5 +123,45 @@ https://zhuanlan.zhihu.com/p/352069904
 https://jingyan.baidu.com/article/f00622287f2c03fbd3f0c8ef.html
 
 
+前端模块化小总结—commonJs,AMD,CMD, ES6 的Module
+https://www.cnblogs.com/beyonds/p/8992619.html
+CommonJS
+就是一个JavaScript模块化的规范，是用在服务器端的node的模块规范
+特点：
+1. 模块输出的是一个值的拷贝， 模块是运行时加载，同步加载
+2. CommonJS 模块的顶层this指向当前模块
+
+有两个API ： 
+require : 加载所要依赖的其他模块
+module.exports 或者exports :对外暴露的接口
+
+exports 与module.exports 的区别：exports 是对 module.exports 的引用，不能直接给exports 赋值，直接赋值无效，结果是一个空对象,module.exports 可以直接赋值
+
+AMD规范
+require.js
+特点 ：异步加载，不阻塞页面的加载，能并行加载多个模块，但是不能按需加载，必须提前加载所需依赖
+
+CMD规范
+实现js库为sea.js
+一个js文件就是一个模块，但是CMD的加载方式更加优秀，是通过按需加载的方式，而不是必须在模块开始就加载所有的依赖
+
+es6 的module规范
+
+
+深刻理解Promise系列(四):catch
+https://www.jianshu.com/p/1c829edec185
+
+
+Promise写一遍
+基础数据类型隐式转换
+10号晚上面试的题
+vue中nextTick以及事件绑定的源码
+web安全
+对称加密和非对称加密
+
+
+
+
+
 
 
