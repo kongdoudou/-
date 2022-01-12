@@ -1,6 +1,6 @@
 const {
-    resolve4
-} = require("dns");
+    resolve
+} = require("path/posix");
 
 const PENDING = "PENDING";
 const FULFILLED = "FULFILLED";
@@ -31,7 +31,7 @@ function Promise(executor) {
     this.onRejectedCallbacks = []; // 存放失败的回调
 
     let resolve = (value) => {
-        if(value instanceof Promise) {
+        if (value && typeof value.then === 'function') {
             // 这里不属于规范，只是为了与原生promise的表现一致
             return value.then(resolve, reject)
         }
@@ -110,7 +110,7 @@ Promise.prototype.then = function (onFulfilled, onRejected) {
 }
 
 // catch之后可以继续调用then
-Promise.prototype.catch = function(errFn) {
+Promise.prototype.catch = function (errFn) {
     return this.then(null, errFn);
 }
 
@@ -152,17 +152,78 @@ function resolvePromise(x, promise2, resolve, reject) {
     }
 }
 
+// 不管promise最后的状态，在执行完then或catch指定的回调函数以后，都会执行finally方法指定的回调函数
+// finally中如果函数执行结果是一个promise的话会有等待效果，不论是
+Promise.prototype.finally = function (cb) {
+    /**
+     * 总结:
+     * finally中返回的promise是成功的，那么向下传递的还是外层promise的参数，仅只存在等待效果，不对传递的参数进行修改 -- 该怎么传还怎么传
+     * finally中返回的promise是失败的，那么他向下传递的就是失败态，触发的就是下一个then的失败回调，同时也存在等待效果
+     * -- 改写错误原因
+     * */ 
+
+    return this.then((v) => {
+        // 如果外层的promise是成功的，finally中返回的promise也是成功的，那么会把外层的成功value值向下传递
+        // 如果外层的promise是成功的，finally中返回的promise是失败的，那么这里就不会执行then里面的方法，会把finally中返回的promise的错误原因向下传递
+        return Promise.resolve(cb()).then(() => v)
+    }, (r) => {
+        // 如果外层的promise是失败的，finally中返回的promise是成功的，那么会把外层的错误原因向下传递
+        // 如果外层的promise是失败的，finally中返回的promise也失败，那么这里就不会执行then里面的方法，会把finally中返回的promise的错误原因向下传递
+        return Promise.resolve(cb()).then(() => {throw r})
+    })
+}
+
 // resolve的静态方法具备等待效果
-Promise.resolve = function(value){
+Promise.resolve = function (value) {
+    // 如果value是promise，那么返回的状态就是value.then执行之后的回调promise的状态
     return new Promise((resolve, reject) => {
         resolve(value)
     })
 }
 
 // reject的静态方法不具备等待效果
-Promise.reject = function(reason) {
+Promise.reject = function (reason) {
     return new Promise((resolve, reject) => {
         reject(reason);
+    })
+}
+
+// Promise.all = function(arr){
+//     if(!Array.isArray(arr) || !arr.length) return;
+//     return new Promise((resolve, reject) => {
+//         let length = arr.length;
+//         let result = [];
+//         arr.forEach((item, index) => {
+//             Promise.resolve(item).then(data => {
+//                 result[index] = data
+//                 length--;
+//                 if(length == 0) resolve(result);
+//             }, reject)
+//         })
+//     })
+// }
+
+Promise.all = function (promises) {
+    if (!Array.isArray(promises) || !promises.length) return;
+    return new Promise((resolve, reject) => {
+        let result = [];
+        let index = 0;
+        // 解决多个异步并发问题，只能靠计数器
+        function process(k, v) {
+            result[k] = v;
+            index++;
+            if (index == promises.length) resolve(result);
+        }
+        for (let i = 0; i < promises.length; i++) {
+            let p = promises[i]
+            if (p && typeof p.then === 'function') {
+                p.then(data => {
+                    process(i, data);
+                }, reject)
+            } else {
+                process(i, p);
+            }
+        }
     })
 }
 
