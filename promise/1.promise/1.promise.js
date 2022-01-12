@@ -31,6 +31,10 @@ function Promise(executor) {
     this.onRejectedCallbacks = []; // 存放失败的回调
 
     let resolve = (value) => {
+        if(value instanceof Promise) {
+            // 这里不属于规范，只是为了与原生promise的表现一致
+            return value.then(resolve, reject)
+        }
         this.value = value;
         this.status = FULFILLED;
         this.onResolvedCallbacks.forEach(fn => fn(this.value));
@@ -105,6 +109,11 @@ Promise.prototype.then = function (onFulfilled, onRejected) {
     return promise2;
 }
 
+// catch之后可以继续调用then
+Promise.prototype.catch = function(errFn) {
+    return this.then(null, errFn);
+}
+
 function resolvePromise(x, promise2, resolve, reject) {
     if (x === promise2) {
         // 循环引用的情况
@@ -141,6 +150,20 @@ function resolvePromise(x, promise2, resolve, reject) {
         // 如果x是普通值，那么直接执行resolve
         resolve(x);
     }
+}
+
+// resolve的静态方法具备等待效果
+Promise.resolve = function(value){
+    return new Promise((resolve, reject) => {
+        resolve(value)
+    })
+}
+
+// reject的静态方法不具备等待效果
+Promise.reject = function(reason) {
+    return new Promise((resolve, reject) => {
+        reject(reason);
+    })
 }
 
 // promise写法是否符合规范的验证工具：https://github.com/promises-aplus/promises-tests
