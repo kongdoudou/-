@@ -35,14 +35,18 @@ function Promise(executor) {
             // 这里不属于规范，只是为了与原生promise的表现一致
             return value.then(resolve, reject)
         }
-        this.value = value;
-        this.status = FULFILLED;
-        this.onResolvedCallbacks.forEach(fn => fn(this.value));
+        if (this.status === PENDING) {
+            this.value = value;
+            this.status = FULFILLED;
+            this.onResolvedCallbacks.forEach(fn => fn(this.value));
+        }
     }
     let reject = (reason) => {
-        this.reason = reason;
-        this.status = REJECTED;
-        this.onRejectedCallbacks.forEach(fn => fn(this.reason));
+        if (this.status === PENDING) {
+            this.reason = reason;
+            this.status = REJECTED;
+            this.onRejectedCallbacks.forEach(fn => fn(this.reason));
+        }
     }
     try {
         executor(resolve, reject)
@@ -160,7 +164,7 @@ Promise.prototype.finally = function (cb) {
      * finally中返回的promise是成功的，那么向下传递的还是外层promise的参数，仅只存在等待效果，不对传递的参数进行修改 -- 该怎么传还怎么传
      * finally中返回的promise是失败的，那么他向下传递的就是失败态，触发的就是下一个then的失败回调，同时也存在等待效果
      * -- 改写错误原因
-     * */ 
+     * */
 
     return this.then((v) => {
         // 如果外层的promise是成功的，finally中返回的promise也是成功的，那么会把外层的成功value值向下传递
@@ -169,7 +173,9 @@ Promise.prototype.finally = function (cb) {
     }, (r) => {
         // 如果外层的promise是失败的，finally中返回的promise是成功的，那么会把外层的错误原因向下传递
         // 如果外层的promise是失败的，finally中返回的promise也失败，那么这里就不会执行then里面的方法，会把finally中返回的promise的错误原因向下传递
-        return Promise.resolve(cb()).then(() => {throw r})
+        return Promise.resolve(cb()).then(() => {
+            throw r
+        })
     })
 }
 
@@ -222,6 +228,22 @@ Promise.all = function (promises) {
                 }, reject)
             } else {
                 process(i, p);
+            }
+        }
+    })
+}
+
+
+// race方法：调用的列表中任何一个成功或者失败就采用它的结果
+Promise.race = function (promises) {
+    if (!Array.isArray(promises) || !promises.length) return;
+    return new Promise((resolve, reject) => {
+        for (let i = 0; i < promises.length; i++) {
+            let p = promises[i]
+            if (p && typeof p.then === 'function') {
+                p.then(resolve, reject)
+            } else {
+                resolve(p);
             }
         }
     })

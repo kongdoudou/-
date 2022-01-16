@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>requestAnimationFrame</title>
+    <style>
+        #box{
+            position: absolute;
+            background-color:burlywood;
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div id="box"></div>
+    </div>
+    
+    <script>
+        // requestAnimationFrame回调函数的执行时机是由系统决定的，也就是说，系统每次绘制前都会主动调用requestAnimationFrame中的回调函数，如果系统绘制频率是60Hz，那回调函数就是16.7ms被执行一次，如果系统绘制频率是75Hz，那么这个时间间隔就是1000/75=13.3ms，这样就保证回调函数在每次绘制中间都能执行一次，就不会出现丢帧的现象，也不会有卡顿的问题
+        const element = document.getElementById('box');
+        let start;
+        function step() {
+            let timeStamp = new Date().getTime();
+            if(typeof start === 'undefined') {
+                start = timeStamp;
+            }
+            const distance = timeStamp - start;
+            element.style.transform = `translateX(${Math.min(distance, 800)}px)`;
+            
+            if(distance < 2000) {
+                window.requestAnimationFrame(step);
+            }
+        }
+
+        function sleep(d) {
+            let t = Date.now();
+            while(Date.now() -t <=d) {
+
+            }
+        }
+        const tasks = [
+            () => {
+                console.log('task1');
+                sleep(5);
+            },
+            () => {
+                console.log('task2');
+                sleep(5);
+            },
+            () => {
+                console.log('task3');
+                sleep(5);
+            }
+        ];
+        // 调用 timeRemaining 这个方法能获得最后的剩余时间
+        // 当前帧的运行时间小于刷新频率（16.6ms）,函数才会执行。否则，就推迟到下一帧，以此类推。如果timeout时间内都没有时间，函数则会强制执行。
+        function loopTask(deadline){
+            // deadline本帧剩余时间
+            // didTimeout 指定的时间是否过期
+            console.log(deadline.timeRemaining(), deadline.didTimeout);
+            // 每次都计算记下本帧执行剩余的时间，如果没时间的话就跳出while循环
+            while((deadline.timeRemaining() > 1 || deadline.didTimeout) && tasks.length) {
+                let task = tasks.splice(0, 1);
+                if(task) task[0]();
+            }
+            if(tasks.length > 0) {
+                requestIdleCallback(loopTask, {time: 1000})
+            }
+        }
+        requestIdleCallback(loopTask, {time: 1000})
+        window.requestAnimationFrame(step);
+    </script>
+</body>
+</html>

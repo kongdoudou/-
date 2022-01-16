@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button id="button">click</button>
+    <script>
+        button.addEventListener('click', () => {
+            console.log('listener1');
+            Promise.resolve().then(() => console.log('microTask1'))
+        })
+        button.addEventListener('click', () => {
+            console.log('listener2');
+            Promise.resolve().then(() => console.log('microTask2'))
+        })
+        // 通过dom操作的事件绑定才是宏任务
+        // 如果通过点击事件触发，以上的执行结果为：listener1 microTask1 listener2 microTask2
+        // 如果是通过button.click()直接触发，那么等同于执行两个函数，执行结果为：listener1 listener2 microTask1 microTask2
+        button.click(); // click1() click2()
+    </script>
+</body>
+
+</html>

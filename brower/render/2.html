@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS</title>
+    <style>
+        div{
+            background-color: red;
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- JS会阻塞DOM解析，需要暂停DOM解析去执行javascript，JS可能会操作样式，所以需要等待样式加载完成 -->
+    <!-- JS阻塞HTML及渲染，JS要等上面的样式加载完成，保证页面js可以操作样式 -->
+    <div>hello</div>
+    <script rel="preload" type="text/javascript">
+        let s = 0;
+        for (let i = 0; i < 1000000000; i++) {
+            s += i
+        }
+        console.log(s);
+    </script>
+    <div>world</div>
+    <!--  -->
+    <!-- 渲染流程：
+    parserHTML -> parserStylesheet -> evaluateScript -> recalculateStyle -> updateLayerTree -> paint -> compositeLayers -> evaluateScript -> updateLayerTree -> compositeLayers -->
+</body>
+
+</html>

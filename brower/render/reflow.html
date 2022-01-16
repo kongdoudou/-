@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script>
+        //  读和写到单独分离
+        function reflow(){
+            let el = document.getElementById('app');
+            let node = document.createElement('h1');
+            node.innerHTML = 'hello';
+            el.appendChild(node);
+            // 强制同步布局
+            console.log(app.offsetTop);
+        }
+        // window.addEventListener('load', function(){
+        //     reflow();
+        // })
+        
+        // 在一段js代码中，反复执行布局操作，就是布局抖动
+        window.addEventListener('load',function(){
+            for(let i = 0 ; i<100;i++){
+                reflow();
+            }
+        });
+        /**
+         * 减少回流和重绘
+         * 1、脱离文档流（绝对定位、透明度）
+         * 2、渲染时图片增加固定宽高
+         * 3、尽量使用css3动画
+         * 4、可以使用will-change、定位、透明度都会提取到单独的图层中
+        */
+    </script>
+</body>
+</html>

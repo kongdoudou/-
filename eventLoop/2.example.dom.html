@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        //  浏览器渲染是每一次eventLoop执行的末尾去检测是否要渲染，每轮只能有一个宏任务
+        // 所以下里面的代码中页面只会展示成黄色，且不会出现颜色切换闪烁的现象
+        document.body.style.background = 'red';
+        console.log(1)
+        Promise.resolve().then(()=>{
+            console.log(2)
+            document.body.style.background = 'yellow';
+        })
+        console.log(3);
+</script>
+</body>
+</html>

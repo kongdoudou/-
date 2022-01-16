@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app" elementtiming="meaningful">kong</div>
+    <div>
+        <span>今天需要把性能优化以及web安全的东西处理完，明天才可以完整开始看vue，不然没时间了</span>
+    </div>
+    <!-- <div style="background-color: red;width:100px;height:100px;"></div> -->
+    <!-- 需要等待所有的事件执行完毕之后才能开始计算 -->
+    <script>
+        app.onClick = function(){
+            console.log('fighting');
+        }
+        window.addEventListener('load', function () {
+            console.log('加载完成了')
+            // let element = document.createTextNode('hello world');
+            // setTimeout(function(){
+            //     document.body.appendChild(element);
+            // }, 1000)
+        })
+
+        setTimeout(function () {
+            const {
+                navigationStart,
+                redirectStart,
+                redirectEnd,
+                fetchStart,
+                domainLookupStart,
+                domainLookupEnd,
+                connectStart,
+                connectEnd,
+                requestStart,
+                responseStart,
+                responseEnd,
+                domLoading,
+                domInteractive,
+                domContentLoadedEventStart,
+                domContentLoadedEventEnd, // DOM加载完毕
+                domComplete,
+                loadEventStart, // 所有资源加载完毕
+                loadEventEnd
+            } = performance.timing;
+            const TTFB = responseStart - fetchStart;
+            const DCL = domContentLoadedEventEnd - fetchStart;
+            const L = loadEventStart - fetchStart;
+            const TTI = domInteractive - fetchStart;
+
+            console.log('TTFB', TTFB);
+            console.log('DCL', DCL);
+            console.log('L', L);
+            console.log('TTI', TTI);
+
+            let paintList = performance.getEntriesByType('paint');
+            const FP = paintList[0].startTime;
+            const FCP = paintList[1].startTime;
+            console.log('FP', FP); // 只是画像素了
+            console.log('FCP', FCP); // 空的div不算内容
+        }, 2000);
+
+        let FMP = 0;
+        new PerformanceObserver((entryList, observer) => {
+            let entries = entryList.getEntries();
+            FMP = entries[0].startTime;
+            console.log('FMP', FMP);
+            observer.disconnect(); // 监控完成后直接断开
+        }).observe({
+            entryTypes: ["element"]
+        })
+
+        let LCP = 0;
+        new PerformanceObserver((entryList, observer) => {
+            let entries = entryList.getEntries();
+            LCP = entries[entries.length - 1].startTime;
+            console.log('LCP', LCP);
+            observer.disconnect(); // 监控完成后直接断开
+        }).observe({
+            entryTypes: ["largest-contentful-paint"]
+        })
+
+        let FID = 0;
+        new PerformanceObserver((entryList, observer) => {
+            let entries = entryList.getEntries();
+            FID = entries[0].processingStart - entries[0].startTime;
+            console.log('FID', FID);
+            observer.disconnect(); // 监控完成后直接断开
+        }).observe({
+            type: 'first-input',
+            buffered: true
+        })
+    </script>
+</body>
+
+</html>

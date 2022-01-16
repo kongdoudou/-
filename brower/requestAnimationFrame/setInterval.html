@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #box{
+            position: absolute;
+            background-color: red;
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div id="box"></div>
+    <script>
+        const element = document.getElementById('box');
+        function move(){
+            console.log('move');
+            element.style.left = element.offsetLeft + 10 + 'px';
+            if(element.offsetLeft > 800) {
+                clearInterval(timer);
+            }
+        }
+        console.dir(element);
+        // 每一次执行之后都会updatelayertree -> paint -> composite layers
+        // 由于js是单线程执行，所以为了防止某个任务执行时间过长而导致进程阻塞，js中存在异步队列的概念，对于如setTimeout和ajax请求都是把进程放到了异步队列中，当主进程为空时才执行异步队列中的任务。所以 setTimeout和setInterval无法保证回调函数的执行时机，可能会在一帧之内执行多次导致多次页面渲染，浪费CPU资源甚至产生卡顿，或者是在一帧即将结束时执行导致重新渲染，出现掉帧的情况。
+        // https://blog.csdn.net/weixin_34205076/article/details/91424467#10
+        let timer = setInterval(move, 10);
+    </script>
+</body>
+</html>

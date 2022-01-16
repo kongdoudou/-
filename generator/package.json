@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "node-fetch-npm": "^2.0.4",
+    "regenerator-runtime": "^0.13.9"
+  }
+}

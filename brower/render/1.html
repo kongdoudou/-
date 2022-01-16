@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="./index.css"> -->
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+    <!-- css不会阻塞html解析 -->
+    <!-- 当html渲染时，会扫描css和js 渲染从上至下，边解析边渲染 -->
+    <!-- 渲染DOM时候要等待样式加载完成 -->
+
+    <!-- html -> htmlParser -> parserStylesheet -> recalculateStyle -> updateLayerTree -> paint -> CompositeLayers -->
+
+    <link rel="stylesheet" href="./index.css">
+    <!-- 如果把css文件放在底部，可以发现又进行了一次绘制 -->
+    <!-- 渲染过程：parserHTML -> recalculateStyle -> layout -> updateLayerTree -> paint -> CompositeLayers -> (parserStylesheet -> recalculateStyle -> updateLayerTree -> paint -> CompositeLayers) -->
+</body>
+</html>
